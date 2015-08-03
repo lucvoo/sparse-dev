@@ -101,20 +101,25 @@ unsigned int hexval(unsigned int c)
 	return retval;
 }
 
+static int max_warnings = 100;
+static int show_info = 1;
+
 static void do_warn(const char *type, struct position pos, const char * fmt, va_list args)
 {
 	static char buffer[512];
 	const char *name;
 
-	vsprintf(buffer, fmt, args);	
+	if (Wall_off) {
+		max_warnings = 0;
+		return;
+	}
+
+	vsprintf(buffer, fmt, args);
 	name = stream_name(pos.stream);
 		
 	fprintf(stderr, "%s:%d:%d: %s%s\n",
 		name, pos.line, pos.pos, type, buffer);
 }
-
-static int max_warnings = 100;
-static int show_info = 1;
 
 void info(struct position pos, const char * fmt, ...)
 {
@@ -130,6 +135,12 @@ void info(struct position pos, const char * fmt, ...)
 static void do_error(struct position pos, const char * fmt, va_list args)
 {
 	static int errors = 0;
+
+	if (Wall_off) {
+		max_warnings = 0;
+		return;
+	}
+
         die_if_error = 1;
 	show_info = 1;
 	/* Shut up warnings after an error */
@@ -241,6 +252,7 @@ int Wtypesign = 0;
 int Wundef = 0;
 int Wuninitialized = 1;
 int Wvla = 1;
+int Wall_off = 0;
 
 int dbg_entry = 0;
 int dbg_dead = 0;
@@ -478,6 +490,13 @@ static char **handle_onoff_switch(char *arg, char **next, const struct warning w
 	int flag = WARNING_ON;
 	char *p = arg + 1;
 	unsigned i;
+
+	if (!strcmp(p, "all_off")) {
+		for (i = 0; i < n; i++)
+			*warnings[i].flag = WARNING_FORCE_OFF;
+		Wall_off = 1;
+		return NULL;
+	}
 
 	if (!strcmp(p, "sparse-all")) {
 		for (i = 0; i < n; i++) {

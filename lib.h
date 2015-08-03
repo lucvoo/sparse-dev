@@ -127,6 +127,7 @@ extern int Wtypesign;
 extern int Wundef;
 extern int Wuninitialized;
 extern int Wvla;
+extern int Wall_off;
 
 extern int dbg_entry;
 extern int dbg_dead;

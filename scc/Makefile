@@ -1,4 +1,5 @@
 archs	+= arm
+archs	+= arm64
 archs	+= riscv32
 archs	+= riscv64
 

@@ -1,4 +1,5 @@
 archs	+= arm
+archs	+= riscv32
 
 V	:= @
 Q	?= $(V:1=)

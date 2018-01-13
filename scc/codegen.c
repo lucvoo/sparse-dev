@@ -166,6 +166,8 @@ static const char *show_size_suffix(const struct rule *r)
 	case 2:	return ".H";
 	case 3:	return ".L";
 	case 4:	return ".Q";
+	case 6:	return ".S";
+	case 7:	return ".D";
 	}
 
 	return "";
@@ -442,6 +444,8 @@ static void generate_op_label(int op)
 		if ((count = r->count))
 			printf("s1->src->value == %d && ", count);
 		if ((size = r->size)) {
+			if (size > 4)	// FP sizes
+				size -= 3;
 			printf("insn->size == %d && ", 4 << size);
 		}
 		if (r->cond)

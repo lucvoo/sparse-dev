@@ -40,6 +40,8 @@ static struct ptree *CONST(void) { return tree("CONST", 0,0,0,  NULL,NULL,NULL);
 %token			SIZEH		/* '.H' */
 %token			SIZEL		/* '.L' */
 %token			SIZEQ		/* '.Q' */
+%token			SIZES		/* '.S' */
+%token			SIZED		/* '.D' */
 %token			COUNTB		/* '#B' */
 %token			COUNTH		/* '#H' */
 %token			COUNTL		/* '#L' */
@@ -102,6 +104,8 @@ size	: 			{ $$ = 0; }
 	| SIZEH			{ $$ = 2; }
 	| SIZEL			{ $$ = 3; }
 	| SIZEQ			{ $$ = 4; }
+	| SIZES			{ $$ = 6; }
+	| SIZED			{ $$ = 7; }
 	;
 
 count	: 			{ $$ = 0; }
@@ -252,6 +256,8 @@ static int yylex(void)
 			case 'H': return SIZEH;
 			case 'L': return SIZEL;
 			case 'Q': return SIZEQ;
+			case 'S': return SIZES;
+			case 'D': return SIZED;
 			default:  buffp--;
 			}
 

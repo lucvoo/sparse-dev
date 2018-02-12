@@ -103,10 +103,10 @@ const char *show_pseudo(pseudo_t pseudo)
 
 	if (!pseudo)
 		return "no pseudo";
-	if (pseudo == VOID)
-		return "VOID";
 	buf = buffer[3 & ++n];
 	switch(pseudo->type) {
+	case PSEUDO_VOID:
+		return "VOID";
 	case PSEUDO_SYM: {
 		struct symbol *sym = pseudo->sym;
 		struct expression *expr;

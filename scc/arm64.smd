@@ -116,6 +116,25 @@ reg:	ADD(reg, mul)	[5] => madd	%rd, %a2, %r1
 reg:	SUB(reg, mul)	[5] => msub	%rd, %a2, %r1
 reg:	NEG(mul)	[5] => mneg	%rd, %a1
 
+sxl:	SEXT(reg,#L)	== %r1
+smull:	MUL(sxl,sxl)	== %a1, %a2
+reg:	smull			[3] => smull	%rd, %a0
+reg:	ADD(smull, reg)		[3] => smaddl	%rd, %a1, %r2
+reg:	ADD(reg, smull)		[3] => smaddl	%rd, %a2, %r1
+reg:	SUB(reg, smull)		[3] => smsubl	%rd, %a2, %r1
+reg:	NEG(smull)		[3] => smnegl	%rd, %a1
+
+zxl:	ZEXT(reg,#L)	== %r1
+umull:	MUL(zxl,zxl)	== %a1, %a2
+reg:	umull			[3] => umull	%rd, %a0
+reg:	ADD(umull, reg)		[3] => umaddl	%rd, %a1, %r2
+reg:	ADD(reg, umull)		[3] => umaddl	%rd, %a2, %r1
+reg:	SUB(reg, umull)		[3] => umsubl	%rd, %a2, %r1
+reg:	NEG(umull)		[3] => umnegl	%rd, %a1
+
+reg:	TRUNC(ASR(MUL(SEXT(reg,#Q),SEXT(reg,#Q)),sh),sh) [6] => smulh\t%rd, %r1111, %r1121
+reg:	TRUNC(LSR(MUL(ZEXT(reg,#Q),ZEXT(reg,#Q)),sh),sh) [6] => umulh\t%rd, %r1111, %r1121
+
 reg:    DIVS(reg, reg)	[36] => sdiv	%rd, %r1, %r2
 reg:    DIVU(reg, reg)	[36] => udiv	%rd, %r1, %r2
 reg:    MODS(reg, reg)	[41] => sdiv	%rt, %r1, %r2; msub	%rd, %rt, %r2, %r1

@@ -182,6 +182,20 @@ reg:	ASR(SHL(reg,sh),sh) [1] if (%c2 < %c12) => sbfiz	%rd, %r11, #(%c12-%c2), #(
 reg:	LSR(SHL(reg,sh),sh) [1] if (%c2 > %c12) => ubfx	%rd, %r11, #(%c2-%c12), #(%#-%c2)
 reg:	ASR(SHL(reg,sh),sh) [1] if (%c2 > %c12) => sbfx	%rd, %r11, #(%c2-%c12), #(%#-%c2)
 
+//// slicing:
+reg:	ZEXT(SLICE(reg, zero),#B)	[1] => 	and	%rd, %r11, #%m2
+reg:	ZEXT(SLICE(reg, zero),#H)	[1] => 	and	%rd, %r11, #%m2
+reg:	ZEXT(SLICE(reg, zero),#L)	[1] => 	and	%rd, %r11, #%m2
+reg:	ZEXT(SLICE(reg, zero), sh)	[1] => 	ubfx	%rd, %r11, #%c12, #%c2
+reg:	SEXT(SLICE(reg, zero), sh)	[1] => 	sbfx	%rd, %r11, #%c12, #%c2
+reg:	ZEXT(SLICE(reg, sh), sh)	[1] => 	ubfx	%rd, %r11, #%c12, #%c2
+reg:	SEXT(SLICE(reg, sh), sh)	[1] => 	sbfx	%rd, %r11, #%c12, #%c2
+
+reg:	SLICE.B(reg, sh)		[1] => 	ubfx	%rd, %r1, #%c2, #8
+reg:	SLICE.H(reg, sh)		[1] => 	ubfx	%rd, %r1, #%c2, #16
+reg:	SLICE.L(reg, sh)		[1] => 	ubfx	%rd, %r1, #%c2, #32
+reg:	SLICE.L(reg, zero)		[0] == %r0
+
 //// compare
 reg:	SET_EQ(condf, zero)	[1] => cset	%rd, %a1
 reg:	SET_NE(condt, zero)	[1] => cset	%rd, %a1

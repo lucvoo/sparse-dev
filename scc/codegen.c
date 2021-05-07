@@ -241,7 +241,7 @@ static void generate_opcodes(void)
 
 }
 
-static void generate_rules(void)
+static void generate_rules(int trace_on)
 {
 	struct rule *r;
 
@@ -252,6 +252,8 @@ static void generate_rules(void)
 	printf("\tunsigned short\tchain:1;\n");
 	printf("\tunsigned short\temit:1;\n");
 	printf("\tconst char*\taction; // FIXME\n");
+	if (trace_on)
+		printf("\tint\tlineno;\n");
 	printf("};\n\n");
 	printf("static const struct rule_info rules_info[] = {\n");
 	// FIXME: most of the rhs entries are the same
@@ -271,6 +273,8 @@ static void generate_rules(void)
 			printf("\t\t\t.action = \"%s\",\n", r->tmpl);
 		else
 			printf("\t\t\t.action = NULL,\n");
+		if (trace_on)
+			printf("\t\t\t.lineno = %d,\n", r->lineno);
 		printf("\t\t\t.count = %d,\n", r->count);
 		printf("\t\t\t.size = %d,\n", r->size);
 		printf("\t\t\t.chain = %d,\n", r->nt ? 1 : 0);
@@ -597,11 +601,11 @@ static int process_md(const char *mdfile)
 	return err;
 }
 
-static void generate_generator(const char *mdfile, const char *arch)
+static void generate_generator(const char *mdfile, const char *arch, int trace_on)
 {
 	generate_nterms();
 	generate_opcodes();
-	generate_rules();
+	generate_rules(trace_on);
 	generate_struct_state();
 
 	generate_chain_rules();
@@ -621,6 +625,7 @@ static void usage(const char *name)
 int main(int argc, const char *argv[])
 {
 	const char *mdfile, *arch;
+	int trace_on = 0;
 
 	if (argc != 3)
 		usage(argv[0]);
@@ -637,7 +642,7 @@ int main(int argc, const char *argv[])
 
 	if (process_md(mdfile))
 		exit(1);
-	generate_generator(mdfile, arch);
+	generate_generator(mdfile, arch, trace_on);
 
 	return 0;
 }

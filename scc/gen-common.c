@@ -7,7 +7,7 @@
 
 #if 0
 #define TRACE 1
-#define	trace_reduce(fmt, ...)	printf("#%*sreducing %s with rule %d " fmt, tlevel, "", name_opcode(s->op), rule, ##__VA_ARGS__)
+#define	trace_reduce(fmt, ...)	printf("#%*sreducing %s with rule %d @ line %d " fmt, tlevel, "", name_opcode(s->op), rule, rinfo->lineno, ##__VA_ARGS__)
 #define	trace_emit(tmpl)	if (tmpl && *tmpl != '%') printf("\n#emit: '%s'\n", tmpl)
 #else
 #define TRACE 0

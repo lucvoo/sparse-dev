@@ -62,6 +62,12 @@ static const char *emit_pseudo(pseudo_t p, int type, int part)
 		break;
 	}
 
+	switch (part) {
+	case 'l': val = (val >>  0) & 0xffff; break;
+	case 'u': val = (val >> 16) & 0xffff; break;
+	case 'L': val = (val >> 32) & 0xffff; break;
+	case 'U': val = (val >> 48) & 0xffff; break;
+	}
 	return emit_value(val, 1, 0);
 }
 
@@ -135,9 +141,19 @@ static void emit_tmpl(struct state *s, const struct rule_info *rinfo)
 			fputs("%", stdout);
 			break;
 
+		case 'c':	// constant
+			if ((c = tmpl[0]) && isdigit(tmpl[1])) {
+				switch (c) {
+				case 'l': case 'u': case 'L': case 'U':
+					part = c;
+					tmpl++;
+					break;
+				default:
+					part = 0;
+				}
+			}
 		case 'r':	// register
 		case 'l':	// label
-		case 'c':	// constant
 			switch ((arg = *tmpl++)) {
 			case 't':
 				if (s->src) {

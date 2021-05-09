@@ -234,6 +234,10 @@ static void emit_tmpl(struct state *s, const struct rule_info *rinfo)
 			}
 			break;
 
+		case '#':
+			printf("%u", s->insn->size);
+			break;
+
 		case 'b':	// branch
 			printf(".L%d", s->insn->bb_true->nr);
 			if (s->insn->bb_false)

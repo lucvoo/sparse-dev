@@ -44,6 +44,7 @@ reg:	vimm		[1] => movn	%rt, #%c0
 			// FIXME
 reg:	imm32		[2] => movz	%rt, #%cl0; movk\t%rt, #%cu0, lsl #16
 reg:	imm48		[3] => movz	%rt, #%cl0; movk\t%rt, #%cu0, lsl #16; movk\t%rt, #%cL0, lsl #32
+reg:	CONST		[4] => movz	%rt, #%cl0; movk\t%rt, #%cu0, lsl #16; movk\t%rt, #%cL0, lsl #32; movk\t%rt, #%cU0, lsl #48
 
 // TODO: all other constants synthesis
 
@@ -53,6 +54,7 @@ reg:	COPY.Q(bimm64)	[1] => mov	%rd, #%c1
 reg:	COPY(vimm)	[1] => movn	%rd, #%c1
 reg:	COPY(imm32)	[2] => movz	%rd, #%cl1; movk\t%rd, #%cu1
 reg:	COPY(imm48)	[3] => movz	%rd, #%cl1; movk\t%rd, #%cu1, lsl #16; movk\t%rd, #%cL1, lsl #32
+reg:	COPY(CONST)	[4] => movz	%rd, #%cl1; movk\t%rd, #%cu1, lsl #16; movk\t%rd, #%cL1, lsl #32; movk\t%rd, #%cU1, lsl #48
 
 
 reg:	COPY(reg)	[1] => mov	%rd, %r1

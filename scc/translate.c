@@ -293,6 +293,13 @@ static void translate_br(struct instruction *insn)
 	label_state(s);
 }
 
+static void translate_label(struct instruction *insn)
+{
+	struct cg_state *s = alloc_state(insn->opcode, insn->target, insn);
+
+	label_state(s);
+}
+
 static void translate_computed_goto(struct instruction *insn)
 {
 	struct cg_state *s;
@@ -376,6 +383,10 @@ static void translate_insn(struct instruction *insn)
 	case OP_BR:
 	case OP_CBR:
 		translate_br(insn);
+		break;
+
+	case OP_LABEL:
+		translate_label(insn);
 		break;
 
 	case OP_RET:

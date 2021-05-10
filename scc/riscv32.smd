@@ -19,6 +19,7 @@ reg:	LSYM			[2] => la	%rt, %l0
 reg:	GSYM			[2] => la	%rt, %l0
 
 reg:	SETVAL			[2] => lui	%rd, %%hi(%l0); addi\t%rd, %rd, %%lo(%l0)
+reg:	LABEL			[2] => lui	%rd, %%hi(%b); addi\t%rd, %rd, %%lo(%b)
 
 //// integer move
 reg:	COPY(reg)		[1] => mv	%rd, %r1

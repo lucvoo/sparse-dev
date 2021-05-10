@@ -64,7 +64,8 @@ reg:	COPY(CONST)	[4] => movz	%rd, #%cl1; movk\t%rd, #%cu1, lsl #16; movk\t%rd, #
 reg:	COPY(reg)	[1] => mov	%rd, %r1
 
 			// 'adr' is enough if label within +- 1MB
-reg:	SETVAL		[2] => adrp	%rt, %x; add	%rt, %rt, :lo12:%x
+reg:	SETVAL		[2] => adrp	%rd, %x; add	%rd, %rd, :lo12:%x
+reg:	LABEL		[2] => adrp	%rd, %b; add	%rd, %rd, :lo12:%b
 
 
 //// shifted register for arithmetic instructions

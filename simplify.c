@@ -2257,6 +2257,31 @@ static int simplify_memop(struct instruction *insn)
 	return ret;
 }
 
+///
+// try to match MUL(EXT(src1, size*2), EXT(src2, size*2))
+static bool is_multiply_wide(pseudo_t res, unsigned size, int ext, pseudo_t *src1, pseudo_t *src2)
+{
+	struct instruction *mul;
+
+	if (DEF_OPCODE(mul, res) != OP_MUL)
+		return false;
+	if (mul->size != 2 * size)
+		return false;
+
+	if (!(*src1 = is_same_op(mul->src1, ext, size)))
+		return false;
+	if (!(*src2 = is_same_op(mul->src2, ext, size)))
+		return false;
+	return true;
+}
+
+static bool is_multiply_high(struct instruction *high, unsigned size, int ext, pseudo_t *src1, pseudo_t *src2)
+{
+	if (high->src2 != value_pseudo(size))
+		return false;
+	return is_multiply_wide(high->src1, size, ext, src1, src2);
+}
+
 static int simplify_cast(struct instruction *insn)
 {
 	unsigned long long mask;
@@ -2361,7 +2386,33 @@ static int simplify_cast(struct instruction *insn)
 			return simplify_mask_or(insn, mask, def);
 		}
 		break;
+
+	case OP_ASR:
+		if (insn->opcode == OP_TRUNC && insn->size == bits_in_long) {
+			pseudo_t src1, src2;
+
+			if (is_multiply_high(def, insn->size, OP_SEXT, &src1, &src2)) {
+				insn->opcode = OP_MULHS;
+				use_pseudo(insn, src1, &insn->src1);
+				use_pseudo(insn, src2, &insn->src2);
+				remove_usage(def->target, &insn->src1);
+				return REPEAT_CSE;
+			}
+		}
+		break;
 	case OP_LSR:
+		if (insn->opcode == OP_TRUNC && insn->size == bits_in_long) {
+			pseudo_t src1, src2;
+
+			if (is_multiply_high(def, insn->size, OP_ZEXT, &src1, &src2)) {
+				insn->opcode = OP_MULHU;
+				use_pseudo(insn, src1, &insn->src1);
+				use_pseudo(insn, src2, &insn->src2);
+				remove_usage(def->target, &insn->src1);
+				return REPEAT_CSE;
+			}
+		}
+		/* fallthrough */
 	case OP_SHL:
 		if (insn->opcode != OP_TRUNC)
 			break;

@@ -109,7 +109,8 @@ reg:	SUB(reg, areg)	[1] => sub	%rd, %r1, %a2
 reg:	NEG(sreg)	[1] => neg	%rd, %a1
 
 //// multiply/divide (FIXME: cost depends on size)
-mul:	MUL(reg, reg)	    == %r1, %r2
+mul:	MUL.L(reg, reg)	    == %r1, %r2
+mul:	MUL.Q(reg, reg)	    == %r1, %r2
 reg:	mul		[5] => mul	%rd, %a0
 reg:	ADD(mul,reg)	[5] => madd	%rd, %a1, %r2
 reg:	ADD(reg, mul)	[5] => madd	%rd, %a2, %r1
@@ -132,8 +133,21 @@ reg:	ADD(reg, umull)		[3] => umaddl	%rd, %a2, %r1
 reg:	SUB(reg, umull)		[3] => umsubl	%rd, %a2, %r1
 reg:	NEG(umull)		[3] => umnegl	%rd, %a1
 
-reg:	TRUNC(ASR(MUL(SEXT(reg,#Q),SEXT(reg,#Q)),sh),sh) [6] => smulh\t%rd, %r1111, %r1121
-reg:	TRUNC(LSR(MUL(ZEXT(reg,#Q),ZEXT(reg,#Q)),sh),sh) [6] => umulh\t%rd, %r1111, %r1121
+// 64x64 -> low(64), high(64)
+reg:	MULHS.Q(reg,reg)	[5] => smulh	%rd, %r1, %r2
+reg:	MULHU.Q(reg,reg)	[5] => umulh	%rd, %r1, %r2
+
+zxq:	ZEXT(reg,#Q)	== %r1
+umulq:	MUL(zxq,zxq)	== %a1, %a2
+sxq:	SEXT(reg,#Q)	== %r1
+smulq:	MUL(sxq,sxq)	== %a1, %a2
+
+reg:	TRUNC(umulq, #Q)	[5] => mul	%rd, %a1
+reg:	TRUNC(smulq, #Q)	[5] => mul	%rd, %a1 // FIXME: should not be needed
+
+// 64x64 -> high(64)
+reg:	TRUNC(ASR(smulq,#Q),#Q)	[5] => smulh	%rd, %a11
+reg:	TRUNC(LSR(umulq,#Q),#Q)	[5] => umulh	%rd, %a11
 
 reg:    DIVS(reg, reg)	[36] => sdiv	%rd, %r1, %r2
 reg:    DIVU(reg, reg)	[36] => udiv	%rd, %r1, %r2

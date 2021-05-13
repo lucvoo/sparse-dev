@@ -378,6 +378,11 @@ reg:	SEL(condf, NOT(reg), zreg)	[1] => csinv	%rd, %r21, %r3, %a1
 reg:	SEL(condt, zreg, NEG(reg))	[1] => csneg	%rd, %r2, %r31, %a1
 reg:	SEL(condf, NEG(reg), zreg)	[1] => csneg	%rd, %r21, %r3, %a1
 
+//// builtins
+reg:	CLS(reg)		[1] => cls	%rd, %r1
+reg:	CLZ(reg)		[1] => clz	%rd, %r1
+reg:	CTZ(reg)		[2] => rbit	%rd, %r1; clz	%rd, %rd
+
 //// load and store
 // FIXME: need to add pre and post writeback modes
 

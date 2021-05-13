@@ -277,6 +277,7 @@ static const char *opcodes[] = {
 
 	[OP_COPY] = "copy",
 
+	[OP_BSWAP] = "bswap",
 	[OP_CLS] = "cls",
 	[OP_CLZ] = "clz",
 	[OP_CTZ] = "ctz",
@@ -476,6 +477,7 @@ const char *show_instruction(struct instruction *insn)
 	case OP_NOT: case OP_NEG:
 	case OP_FNEG:
 	case OP_SYMADDR:
+	case OP_BSWAP:
 	case OP_CLS: case OP_CLZ: case OP_CTZ:
 		buf += sprintf(buf, "%s <- %s", show_pseudo(insn->target), show_pseudo(insn->src1));
 		break;
@@ -2613,6 +2615,11 @@ static pseudo_t linearize_builtin_unop(struct entrypoint *ep, int op, struct exp
 	return insn->target = alloc_pseudo(insn);
 }
 
+static pseudo_t linearize_bswap(struct entrypoint *ep, struct expression *expr)
+{
+	return linearize_builtin_unop(ep, OP_BSWAP, expr);
+}
+
 static pseudo_t linearize_cls(struct entrypoint *ep, struct expression *expr)
 {
 	return linearize_builtin_unop(ep, OP_CLS, expr);
@@ -2679,6 +2686,9 @@ static struct sym_init {
 	struct symbol_op op;
 } builtins_table[] = {
 	// must be declared in builtin.c:declare_builtins[]
+	{ "__builtin_bswap16", linearize_bswap },
+	{ "__builtin_bswap32", linearize_bswap },
+	{ "__builtin_bswap64", linearize_bswap },
 	{ "__builtin_clrsb", linearize_cls },
 	{ "__builtin_clrsbl", linearize_cls },
 	{ "__builtin_clrsbll", linearize_cls },

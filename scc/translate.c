@@ -364,6 +364,10 @@ static void translate_insn(struct instruction *insn)
 		break;
 	case OP_NOT:
 	case OP_NEG:
+	case OP_BSWAP:
+	case OP_CLS:
+	case OP_CLZ:
+	case OP_CTZ:
 	case OP_COPY:
 	case OP_SYMADDR:
 		translate_unop(insn);

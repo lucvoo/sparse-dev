@@ -276,6 +276,10 @@ static const char *opcodes[] = {
 	[OP_RANGE] = "range-check",
 
 	[OP_COPY] = "copy",
+
+	[OP_CLS] = "cls",
+	[OP_CLZ] = "clz",
+	[OP_CTZ] = "ctz",
 };
 
 static char *show_asm_constraints(char *buf, const char *sep, struct asm_constraint_list *list)
@@ -472,6 +476,7 @@ const char *show_instruction(struct instruction *insn)
 	case OP_NOT: case OP_NEG:
 	case OP_FNEG:
 	case OP_SYMADDR:
+	case OP_CLS: case OP_CLZ: case OP_CTZ:
 		buf += sprintf(buf, "%s <- %s", show_pseudo(insn->target), show_pseudo(insn->src1));
 		break;
 
@@ -2598,6 +2603,31 @@ struct entrypoint *linearize_symbol(struct symbol *sym)
  * Builtin functions
  */
 
+static pseudo_t linearize_builtin_unop(struct entrypoint *ep, int op, struct expression *expr)
+{
+	struct instruction *insn = alloc_typed_instruction(op, expr->ctype);
+	pseudo_t arg = linearize_expression(ep, first_expression(expr->args));
+
+	use_pseudo(insn, arg, &insn->src1);
+	add_one_insn(ep, insn);
+	return insn->target = alloc_pseudo(insn);
+}
+
+static pseudo_t linearize_cls(struct entrypoint *ep, struct expression *expr)
+{
+	return linearize_builtin_unop(ep, OP_CLS, expr);
+}
+
+static pseudo_t linearize_clz(struct entrypoint *ep, struct expression *expr)
+{
+	return linearize_builtin_unop(ep, OP_CLZ, expr);
+}
+
+static pseudo_t linearize_ctz(struct entrypoint *ep, struct expression *expr)
+{
+	return linearize_builtin_unop(ep, OP_CTZ, expr);
+}
+
 static pseudo_t linearize_fma(struct entrypoint *ep, struct expression *expr)
 {
 	struct instruction *insn = alloc_typed_instruction(OP_FMADD, expr->ctype);
@@ -2649,6 +2679,15 @@ static struct sym_init {
 	struct symbol_op op;
 } builtins_table[] = {
 	// must be declared in builtin.c:declare_builtins[]
+	{ "__builtin_clrsb", linearize_cls },
+	{ "__builtin_clrsbl", linearize_cls },
+	{ "__builtin_clrsbll", linearize_cls },
+	{ "__builtin_clz", linearize_clz },
+	{ "__builtin_clzl", linearize_clz },
+	{ "__builtin_clzll", linearize_clz },
+	{ "__builtin_ctz", linearize_ctz },
+	{ "__builtin_ctzl", linearize_ctz },
+	{ "__builtin_ctzll", linearize_ctz },
 	{ "__builtin_fma", linearize_fma },
 	{ "__builtin_fmaf", linearize_fma },
 	{ "__builtin_fmal", linearize_fma },

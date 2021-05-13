@@ -379,6 +379,10 @@ reg:	SEL(condt, zreg, NEG(reg))	[1] => csneg	%rd, %r2, %r31, %a1
 reg:	SEL(condf, NEG(reg), zreg)	[1] => csneg	%rd, %r21, %r3, %a1
 
 //// builtins
+reg:	BSWAP.H(reg)		[1] => rev16	%rd, %r1
+reg:	BSWAP.L(reg)		[1] => rev	%rd, %r1
+reg:	BSWAP.Q(reg)		[1] => rev	%rd, %r1
+
 reg:	CLS(reg)		[1] => cls	%rd, %r1
 reg:	CLZ(reg)		[1] => clz	%rd, %r1
 reg:	CTZ(reg)		[2] => rbit	%rd, %r1; clz	%rd, %rd

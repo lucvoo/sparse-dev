@@ -49,6 +49,7 @@ LIB_OBJS += ir.o
 LIB_OBJS += lib.o
 LIB_OBJS += linearize.o
 LIB_OBJS += liveness.o
+LIB_OBJS += lower.o
 LIB_OBJS += memops.o
 LIB_OBJS += opcode.o
 LIB_OBJS += optimize.o

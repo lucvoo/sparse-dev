@@ -5,5 +5,6 @@ struct entrypoint;
 
 /* optimize.c */
 void optimize(struct entrypoint *ep);
+int lower(struct entrypoint *ep, int cse);
 
 #endif

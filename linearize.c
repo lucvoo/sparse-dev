@@ -1079,6 +1079,20 @@ static pseudo_t add_binary_op(struct entrypoint *ep, struct symbol *ctype, int o
 	return target;
 }
 
+struct instruction *add_binary_insn(struct basic_block *bb, struct symbol *ctype, int op, pseudo_t left, pseudo_t right)
+{
+	struct instruction *insn = alloc_typed_instruction(op, ctype);
+	pseudo_t target = alloc_pseudo(insn);
+	insn->target = target;
+	use_pseudo(insn, left, &insn->src1);
+	use_pseudo(insn, right, &insn->src2);
+	if (bb_reachable(bb)) {
+		insn->bb = bb;
+		add_instruction(&bb->insns, insn);
+	}
+	return insn;
+}
+
 static pseudo_t add_cmp_op(struct entrypoint *ep, struct symbol *ctype, int op, struct symbol *itype, pseudo_t left, pseudo_t right)
 {
 	pseudo_t target = add_binary_op(ep, ctype, op, left, right);

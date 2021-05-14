@@ -74,6 +74,13 @@ static struct basic_block *alloc_basic_block(struct entrypoint *ep, struct posit
 	return bb;
 }
 
+struct basic_block *alloc_bb(struct entrypoint *ep, struct position pos)
+{
+	struct basic_block *bb = alloc_basic_block(ep, pos);
+	add_bb(&ep->bbs, bb);
+	return bb;
+}
+
 static struct multijmp *alloc_multijmp(struct basic_block *target, long long begin, long long end)
 {
 	struct multijmp *multijmp = __alloc_multijmp(0);

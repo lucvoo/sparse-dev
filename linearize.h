@@ -333,6 +333,8 @@ struct entrypoint {
 
 extern void insert_select(struct basic_block *bb, struct instruction *br, struct instruction *phi, pseudo_t if_true, pseudo_t if_false);
 
+struct basic_block *alloc_bb(struct entrypoint *ep, struct position pos);
+
 struct instruction *alloc_phisrc(pseudo_t pseudo, struct symbol *type);
 struct instruction *alloc_phi_node(struct basic_block *bb, struct symbol *type, struct ident *ident);
 struct instruction *insert_phi_node(struct basic_block *bb, struct symbol *var);

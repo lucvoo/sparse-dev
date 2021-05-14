@@ -17,6 +17,23 @@
 #include "flowgraph.h"		// for cfg_postorder()
 
 
+static bool lower_pow2(struct instruction *insn, int opcode)
+{
+	pseudo_t src2 = insn->src2;
+
+	if (src2->type == PSEUDO_VAL) {
+		long long val = zero_extend(insn->src2->value, insn->size);
+		if (is_power_of_2(val)) {
+			// Maybe this should be done earlier, during simplifcation?
+			insn->opcode = opcode;
+			insn->src2 = value_pseudo(log2_exact(val));
+			return true;
+		}
+	}
+	return false;
+}
+
+
 static pseudo_t add_binop(struct basic_block *bb, struct position pos, int op, struct symbol *type, pseudo_t src1, long long val)
 {
 	pseudo_t src2 = value_pseudo(val);
@@ -121,6 +138,10 @@ int lower(struct entrypoint *ep, int cse)
 			if (!insn->bb)
 				continue;
 			switch (insn->opcode) {
+			case OP_MUL:
+				if (lower_pow2(insn, OP_SHL))
+					changed |= REPEAT_CSE;
+				break;
 			case OP_SWITCH:
 				DELETE_CURRENT_PTR(insn);
 				changed |= lower_switch(insn, bb);

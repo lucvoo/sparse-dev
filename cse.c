@@ -130,6 +130,22 @@ void cse_collect(struct instruction *insn)
 	add_instruction(insn_hash_table + hash, insn);
 }
 
+void cse_collect_all(struct entrypoint *ep)
+{
+	struct basic_block *bb;
+
+	FOR_EACH_PTR(ep->bbs, bb) {
+		struct instruction *insn;
+
+		FOR_EACH_PTR(bb->insns, insn) {
+			if (!insn->bb)
+				continue;
+			cse_collect(insn);
+		} END_FOR_EACH_PTR(insn);
+	} END_FOR_EACH_PTR(bb);
+}
+
+
 /* Compare two (sorted) phi-lists */
 static int phi_list_compare(struct pseudo_list *l1, struct pseudo_list *l2)
 {

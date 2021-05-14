@@ -138,6 +138,10 @@ int lower(struct entrypoint *ep, int cse)
 			if (!insn->bb)
 				continue;
 			switch (insn->opcode) {
+			case OP_DIVU:
+				if (lower_pow2(insn, OP_LSR))
+					changed |= REPEAT_CSE;
+				break;
 			case OP_MUL:
 				if (lower_pow2(insn, OP_SHL))
 					changed |= REPEAT_CSE;

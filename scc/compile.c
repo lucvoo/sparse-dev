@@ -4,6 +4,8 @@
 #include "expression.h"
 #include "linearize.h"
 #include "flow.h"
+#include "cse.h"
+#include "optimize.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdarg.h>
@@ -56,6 +58,10 @@ static void output_fn(struct entrypoint *ep)
 	unsigned long generation = ++bb_generation;
 	struct symbol *sym = ep->name;
 	const char *name;
+
+	lower(ep, 1);
+	cse_collect_all(ep);
+	cse_eliminate(ep);
 
 	output_fn_static_sym(ep->syms);
 

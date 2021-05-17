@@ -70,6 +70,34 @@ static inline int log2_exact(unsigned long long val)
 	return 8 * sizeof(val) - __builtin_clzl(val) - 1;
 }
 
+static inline int clz(unsigned long long val)
+{
+	int n = 0;
+
+	if (!(val >> 32)) n += 32; else val >>= 32;
+	if (!(val >> 16)) n += 16; else val >>= 16;
+	if (!(val >>  8)) n +=  8; else val >>=  8;
+	if (!(val >>  4)) n +=  4; else val >>=  4;
+	if (!(val >>  2)) n +=  2; else val >>=  2;
+	if (!(val >>  1)) n +=  1; else val >>=  1;
+	if (!val) n +=  1;
+	return n;
+}
+
+static inline int ctz(unsigned long long val)
+{
+	int n = 0;
+
+	if (!(val << 32)) n += 32; else val <<= 32;
+	if (!(val << 16)) n += 16; else val <<= 16;
+	if (!(val <<  8)) n +=  8; else val <<=  8;
+	if (!(val <<  4)) n +=  4; else val <<=  4;
+	if (!(val <<  2)) n +=  2; else val <<=  2;
+	if (!(val <<  1)) n +=  1; else val <<=  1;
+	if (!val) n +=  1;
+	return n;
+}
+
 static inline unsigned long long ror(unsigned long long val, int n)
 {
 	return (val << (-n & 63)) | (val >> (n & 63));

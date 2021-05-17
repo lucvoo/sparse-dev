@@ -246,6 +246,10 @@ static struct symbol_op bswap_op = {
 };
 
 
+#define	__builtin_clz(x)	(clz((unsigned int)x) - 32)
+#define	__builtin_clzll(x)	 clz(x)
+#define	__builtin_ctz(x)	((x) == 0 ? 32 : ctz((unsigned int)x))
+#define	__builtin_ctzll(x)	 ctz(x)
 #define EXPAND_FINDBIT(name)					\
 static int expand_##name(struct expression *expr, int cost)	\
 {								\

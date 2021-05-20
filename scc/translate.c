@@ -365,6 +365,7 @@ static void translate_insn(struct instruction *insn)
 	case OP_NOT:
 	case OP_NEG:
 	case OP_COPY:
+	case OP_SYMADDR:
 		translate_unop(insn);
 		break;
 	case OP_LOAD:
@@ -424,7 +425,6 @@ static void translate_insn(struct instruction *insn)
 		translate_slice(insn);
 		break;
 
-	case OP_SYMADDR:
 	case OP_BADOP:
 		// Should never happen ?
 

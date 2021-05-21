@@ -381,10 +381,8 @@ reg:	SEL(condf, NEG(reg), zreg)	[1] => csneg	%rd, %r21, %r3, %a1
 //// load and store
 // FIXME: need to add pre and post writeback modes
 
-asym:	GSYM			[1] => adrp	%rt, %l0; add	%rt, %rt, :lo12:%l0
-asym:	LSYM			[1] => add	%rt, sp, SP@%c0
-reg:	asym			    == %rp	// this make a PSEUDO_REG from a SYM
-addr:	asym			    == %rp
+reg:	SYMADDR(GSYM)		[2] => adrp	%rd, %l1; add	%rd, %rd, :lo12:%l1
+reg:	SYMADDR(LSYM)		[1] => add	%rd, sp, SP@%c1
 
 addr:	reg			    == %r0
 addr:	ADD(reg,reg)		    == %r1, %r2

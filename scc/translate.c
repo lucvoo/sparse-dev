@@ -431,9 +431,6 @@ static void translate_bb(struct basic_block *bb)
 	struct instruction *insn;
 
 	FOR_EACH_PTR(bb->insns, insn) {
-		if (!insn->bb)
-			continue;
-
 		translate_insn(insn);
 	} END_FOR_EACH_PTR(insn);
 }
@@ -454,9 +451,6 @@ static void reduce_bb(struct basic_block *bb)
 	printf(".L%d:\n", bb->nr);
 
 	FOR_EACH_PTR(bb->insns, insn) {
-		if (!insn->bb)
-			continue;
-
 		if (insn->opcode == OP_CALL)
 			reduce_args(insn);
 		if (insn->cg_state)
@@ -466,6 +460,13 @@ static void reduce_bb(struct basic_block *bb)
 
 void codegen_bb(struct basic_block *bb)
 {
+	struct instruction *insn;
+
+	FOR_EACH_PTR(bb->insns, insn) {
+		if (!insn->bb)
+			DELETE_CURRENT_PTR(insn);
+	} END_FOR_EACH_PTR(insn);
+
 	translate_bb(bb);
 	reduce_bb(bb);
 }

@@ -183,6 +183,29 @@ cr_hi:	SET_B(stdop, reg)	[1] => cmp	%r2, %a1
 cr_hs:	SET_AE(reg, stdop)	[1] => cmp	%r1, %a2
 cr_hs:	SET_BE(stdop, reg)	[1] => cmp	%r2, %a1
 
+cr_eq:	SET_EQ(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_eq:	SET_EQ(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_ne:	SET_NE(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_ne:	SET_NE(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+
+cr_lt:	SET_LT(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_lt:	SET_GT(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_le:	SET_LE(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_le:	SET_GE(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_gt:	SET_GT(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_gt:	SET_LT(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_ge:	SET_GE(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_ge:	SET_LE(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+
+cr_lo:	SET_B(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_lo:	SET_A(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_ls:	SET_BE(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_ls:	SET_AE(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_hi:	SET_A(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_hi:	SET_B(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+cr_hs:	SET_AE(reg, NEG(stdop))	[1] => cmn	%r1, %a2
+cr_hs:	SET_BE(NEG(stdop), reg)	[1] => cmn	%r2, %a1
+
 ////
 reg:	cr_eq			[2] => moveq	%rd, #1; movne	%rd, #0
 

@@ -156,11 +156,12 @@ reg:	LOAD2.L(reg)		[6] => ldm	%r1, {%rd:lo, %rd:up}
 :	STOREMEM(reg, LOADMEM(reg)) [30]=> bl	memcpy(%r1, %r21, #%#)
 
 // compare
+cr_ne:	reg			[1] => cmp	%r0, #0
+
 cr_eq:	SET_EQ(reg, stdop)	[1] => cmp	%r1, %a2
 cr_eq:	SET_EQ(stdop, reg)	[1] => cmp	%r2, %a1
 cr_ne:	SET_NE(reg, stdop)	[1] => cmp	%r1, %a2
 cr_ne:	SET_NE(stdop, reg)	[1] => cmp	%r2, %a1
-cr_ne:	reg			[1] => cmp	%r0, #0
 
 cr_lt:	SET_LT(reg, stdop)	[1] => cmp	%r1, %a2
 cr_lt:	SET_GT(stdop, reg)	[1] => cmp	%r2, %a1

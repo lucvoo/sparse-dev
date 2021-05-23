@@ -7,6 +7,7 @@ reg:	ARG
 reg:	UNDEF
 reg:	VOID
 imm:	CONST		// FIXME: which kind/range
+mimm:	CONST		if (modified_immediate(%c))
 zero:	CONST		if (%c == 0)
 
 // !!! WARNING !!! this '%rt' things is an horrible hackery
@@ -33,7 +34,7 @@ xreg:	ASR(reg, reg)		    == %r1, asr %r2
 xreg:	ROR(reg, reg)		    == %r1, ror %r2
 
 //// standard operand
-stdop:	imm			    == %c0
+stdop:	mimm			    == %c0
 stdop:	reg			    == %r0
 stdop:	sreg			    == %a0
 stdop:	xreg			    == %a0

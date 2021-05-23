@@ -34,6 +34,16 @@ struct cg_state *alloc_state(int op, pseudo_t src, struct instruction *insn)
 	return &s->ext;
 }
 
+ALLOCATOR(rstate, "rstates");
+struct rstate *alloc_rstate(struct cg_state *cgs, int ruleno)
+{
+	struct rstate *rs = __alloc_rstate(0);
+
+	rs->cgs	= cgs;
+	rs->ruleno = ruleno;
+	return rs;
+}
+
 
 static const char *emit_value(long long val, bool neg_ok, bool hex)
 {
@@ -289,14 +299,14 @@ static void emit_tmpl(struct state *s, const struct rule_info *rinfo)
 		s->src = tmp_reg;
 }
 
-static void emit_state(struct state *s, const struct rule_info *rinfo)
+void emit_rstate(struct rstate *rs)
 {
+	unsigned ruleno = rs->ruleno;
+	const struct rule_info *rinfo = &rules_info[ruleno];
+	struct state *s = (void*)rs->cgs;
+
 	if (!rinfo->action)
 		return;
-
-	// FIXME: should not happen?
-	if (!rinfo->emit)		// It's a sub-rule
-		return;			// do not emit anything
 
 	//printf("# rule %ld\n", rinfo - &rules_info[0]);
 	putchar('\t');
@@ -369,7 +379,7 @@ void trace_state(const char *msg, const struct cg_state *s)
 }
 
 
-void reduce_state(struct cg_state *cgs, int nt)
+void reduce_state(struct rstate_list **list, struct cg_state *cgs, int nt)
 {
 	static int tlevel;
 	struct state *s = (void*) cgs;
@@ -396,15 +406,18 @@ void reduce_state(struct cg_state *cgs, int nt)
 		if (!rinfo->rhs[i])
 			break;
 		trace_reduce("(kid %d)\n", i);
-		reduce_state(cgs->kids[i], rinfo->rhs[i]);
+		reduce_state(list, cgs->kids[i], rinfo->rhs[i]);
 	}
 	trace_reduce("(kids)\n");
 	if (rinfo->chain)
-		reduce_state(cgs, rinfo->rhs[1]);
+		reduce_state(list, cgs, rinfo->rhs[1]);
 	trace_reduce("(chain)\n");
 
 	trace_state("reduce", cgs);
-	emit_state(s, rinfo);
+	if (rinfo->action && rinfo->emit) {
+		struct rstate *rstate = alloc_rstate(cgs, rule);
+		add_ptr_list(list, rstate);
+	}
 	trace_reduce("(emit)\n\n");
 	tlevel--;
 }

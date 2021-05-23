@@ -4,6 +4,7 @@
 #define	GENCODE_H
 
 #include "insncode.h"
+#include "../ptrlist.h"
 
 struct pseudo;
 struct instruction;
@@ -17,14 +18,24 @@ struct cg_state {
 	struct cg_state		*kids[NBR_KIDS];
 };
 
+struct rstate {
+	struct cg_state		*cgs;
+	unsigned short		ruleno;
+};
+DECLARE_PTR_LIST(rstate_list, struct rstate);
+
 // gen-common.c
 struct state;
 DECLARE_ALLOCATOR(state);
+DECLARE_ALLOCATOR(rstate);
+
 struct cg_state *alloc_state(int op, struct pseudo *src, struct instruction *insn);
+struct rstate *alloc_rstate(struct cg_state *s, int ruleno);
+void emit_rstate(struct rstate *rs);
 
 // gen-$ARCH.c
 void label_state(struct cg_state *s);
-void reduce_state(struct cg_state *s, int nt);
+void reduce_state(struct rstate_list **list, struct cg_state *s, int nt);
 
 // translate.c
 void codegen_bb(struct basic_block *bb);

@@ -435,31 +435,31 @@ static void translate_bb(struct basic_block *bb)
 	} END_FOR_EACH_PTR(insn);
 }
 
-static void reduce_args(struct instruction *insn)
+static void reduce_args(struct rstate_list **list, struct instruction *insn)
 {
 	pseudo_t arg;
 
 	FOR_EACH_PTR(insn->arguments, arg) {
-		reduce_state(arg->priv, 0);
+		reduce_state(list, arg->priv, 0);
 	} END_FOR_EACH_PTR(arg);
 }
 
-static void reduce_bb(struct basic_block *bb)
+static void reduce_bb(struct rstate_list **list, struct basic_block *bb)
 {
 	struct instruction *insn;
 
-	printf(".L%d:\n", bb->nr);
-
 	FOR_EACH_PTR(bb->insns, insn) {
 		if (insn->opcode == OP_CALL)
-			reduce_args(insn);
+			reduce_args(list, insn);
 		if (insn->cg_state)
-			reduce_state(insn->cg_state, 0);
+			reduce_state(list, insn->cg_state, 0);
 	} END_FOR_EACH_PTR(insn);
 }
 
 void codegen_bb(struct basic_block *bb)
 {
+	struct rstate_list *list = NULL;
+	struct rstate *rstate;
 	struct instruction *insn;
 
 	FOR_EACH_PTR(bb->insns, insn) {
@@ -468,5 +468,10 @@ void codegen_bb(struct basic_block *bb)
 	} END_FOR_EACH_PTR(insn);
 
 	translate_bb(bb);
-	reduce_bb(bb);
+	reduce_bb(&list, bb);
+
+	printf(".L%d:\n", bb->nr);
+	FOR_EACH_PTR(list, rstate) {
+		emit_rstate(rstate);
+	} END_FOR_EACH_PTR(rstate);
 }

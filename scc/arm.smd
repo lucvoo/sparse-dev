@@ -104,11 +104,10 @@ reg:	ZEXT(LSR(reg, sh), sh)	[1] => ubfx	%rd, %r11, %c12, %c2
 reg:	SEXT(LSR(reg, sh), sh)	[1] => sbfx	%rd, %r11, %c12, %c2
 
 // load and store
-asym:	GSYM	[2] => movw	%rt, #:lower16:%l0; movt	%rt, #:upper16:%l0
-asym:	GSYM			[4] => ldr	%rt, =.LOC(%l0)
-asym:	LSYM			[1] => add	%rt, sp, SP@%c0
-reg:	asym			    == %rp	// this make a PSEUDO_REG from a SYM
-addr:	asym			    == %rp
+reg:	SYMADDR(GSYM)		[2] => movw	%rt, #:lower16:%l0; movt	%rt, #:upper16:%l0
+reg:	SYMADDR(GSYM)		[4] => ldr	%rt, =.LOC(%l0)
+reg:	SYMADDR(LSYM)		[1] => add	%rt, sp, SP@%c0
+addr:	reg			    == %r0
 addr:	ADD(reg, imm)		    == %r1, %c2	// simm12, also pre & post!
 addr:	ADD(reg, reg)		    == %r1, %r2
 addr:	ADD(reg, sreg)		    == %r1, %a2

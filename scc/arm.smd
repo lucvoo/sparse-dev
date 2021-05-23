@@ -8,7 +8,6 @@ reg:	UNDEF
 reg:	VOID
 imm:	CONST		// FIXME: which kind/range
 zero:	CONST		if (%c == 0)
-sh:	CONST		// FIXME
 
 // !!! WARNING !!! this '%rt' things is an horrible hackery
 reg:	CONST			[4] => ldr	%rt, =%c0
@@ -20,6 +19,7 @@ reg:	COPY(reg)		[1] => mov	%rd, %r1
 reg:	COPY(CONST)		[2] => movw	%rd, #:lower16:%c1;  movt	%rd, #:upper16:%c1
 
 //// shifted register
+sh:	CONST			// their range is OK by construction
 sreg:	SHL(reg, sh)		    == %r1, lsl %c2
 sreg:	LSR(reg, sh)		    == %r1, lsr %c2
 sreg:	ASR(reg, sh)		    == %r1, asr %c2

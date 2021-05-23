@@ -157,6 +157,8 @@ reg:	LOAD2.L(reg)		[6] => ldm	%r1, {%rd:lo, %rd:up}
 
 // compare
 cr_ne:	reg			[1] => cmp	%r0, #0
+cr_eq:	AND(reg, stdop)		[1] => tst	%r1, %a2
+cr_eq:	XOR(reg, stdop)		[1] => teq	%r1, %a2
 
 cr_eq:	SET_EQ(reg, stdop)	[1] => cmp	%r1, %a2
 cr_eq:	SET_EQ(stdop, reg)	[1] => cmp	%r2, %a1

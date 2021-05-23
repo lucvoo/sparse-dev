@@ -70,4 +70,9 @@ static inline int log2_exact(unsigned long long val)
 	return 8 * sizeof(val) - __builtin_clzl(val) - 1;
 }
 
+static inline unsigned long long ror(unsigned long long val, int n)
+{
+	return (val << (-n & 63)) | (val >> (n & 63));
+}
+
 #endif

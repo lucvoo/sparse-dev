@@ -30,6 +30,8 @@ vimm:	CONST		if inverted_immediate(%c)
 imm32:	CONST		if range(%c, 0, 0xffffffff)
 imm48:	CONST		if range(%c, 0, 0xffffffffffffULL)
 
+bit:	CONST		if power_of_two(%c)
+
 one:	CONST		if %c == 1
 ones32:	CONST		if %c == 0xffffffff
 ones64:	CONST		if %c == 0xffffffffffffffffULL
@@ -311,6 +313,7 @@ cbeq:	SET_EQ(reg, zero)	    == %r1
 :	CBR(cbeq)		[1] => cbz	%a1, %b
 
 // FIXME: tbz, tbnz
+:	CBR(AND(reg,bit))	[1] => tbnz	%r11, #%c:log2:12, %b
 
 :	BR			[1] => b	%b
 :	COMPUTEDGOTO(reg)	[1] => br	%r1

@@ -46,6 +46,11 @@ static const char *emit_value(long long val, bool neg_ok, bool hex)
 	return buff;
 }
 
+#define	FUN_16_0	'l'
+#define	FUN_16_1	'u'
+#define	FUN_16_2	'L'
+#define	FUN_16_3	'U'
+
 static const char *emit_pseudo(pseudo_t p, int type, int part)
 {
 	long long val = p->value;
@@ -63,10 +68,10 @@ static const char *emit_pseudo(pseudo_t p, int type, int part)
 	}
 
 	switch (part) {
-	case 'l': val = (val >>  0) & 0xffff; break;
-	case 'u': val = (val >> 16) & 0xffff; break;
-	case 'L': val = (val >> 32) & 0xffff; break;
-	case 'U': val = (val >> 48) & 0xffff; break;
+	case FUN_16_0: val = (val >>  0) & 0xffff; break;
+	case FUN_16_1: val = (val >> 16) & 0xffff; break;
+	case FUN_16_2: val = (val >> 32) & 0xffff; break;
+	case FUN_16_3: val = (val >> 48) & 0xffff; break;
 	}
 	return emit_value(val, 1, 0);
 }
@@ -142,16 +147,15 @@ static void emit_tmpl(struct state *s, const struct rule_info *rinfo)
 			break;
 
 		case 'c':	// constant
-			if ((c = tmpl[0]) && isdigit(tmpl[1])) {
-				switch (c) {
-				case 'l': case 'u': case 'L': case 'U':
-					part = c;
-					tmpl++;
-					break;
-				default:
-					part = 0;
-				}
+			switch (*tmpl) {
+				break;
+			case 'l': case 'u': case 'L': case 'U':
+				part = *tmpl++;
+				break;
+			default:
+				part = 0;
 			}
+			/* fallthrough */
 		case 'r':	// register
 		case 'l':	// label
 			switch ((arg = *tmpl++)) {

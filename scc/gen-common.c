@@ -46,6 +46,7 @@ static const char *emit_value(long long val, bool neg_ok, bool hex)
 	return buff;
 }
 
+#define	FUN_LOG2	1
 #define	FUN_16_0	'l'
 #define	FUN_16_1	'u'
 #define	FUN_16_2	'L'
@@ -72,6 +73,7 @@ static const char *emit_pseudo(pseudo_t p, int type, int part)
 	case FUN_16_1: val = (val >> 16) & 0xffff; break;
 	case FUN_16_2: val = (val >> 32) & 0xffff; break;
 	case FUN_16_3: val = (val >> 48) & 0xffff; break;
+	case FUN_LOG2: val = log2_exact(val);      break;
 	}
 	return emit_value(val, 1, 0);
 }
@@ -148,6 +150,14 @@ static void emit_tmpl(struct state *s, const struct rule_info *rinfo)
 
 		case 'c':	// constant
 			switch (*tmpl) {
+			case ':':
+				tmpl++;
+				if (memcmp(tmpl, "log2:", 5) == 0) {
+					tmpl += 5;
+					part = FUN_LOG2;
+				} else {
+					// error
+				}
 				break;
 			case 'l': case 'u': case 'L': case 'U':
 				part = *tmpl++;

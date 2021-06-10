@@ -47,6 +47,7 @@ static const char *emit_value(long long val, bool neg_ok, bool hex)
 }
 
 #define	FUN_LOG2	1
+#define	FUN_NEG		2
 #define	FUN_16_0	'l'
 #define	FUN_16_1	'u'
 #define	FUN_16_2	'L'
@@ -62,6 +63,10 @@ static const char *emit_pseudo(pseudo_t p, int type, int part)
 			return "wzr";		// FIXME
 	default:
 		return show_pseudo(p);
+	case 'n':
+		if (part == 0)
+			part = FUN_NEG;
+		/* fallthrough */
 	case 'c':
 		if (p->type != PSEUDO_VAL)
 			return show_pseudo(p);	// FIXME: error
@@ -73,6 +78,7 @@ static const char *emit_pseudo(pseudo_t p, int type, int part)
 	case FUN_16_1: val = (val >> 16) & 0xffff; break;
 	case FUN_16_2: val = (val >> 32) & 0xffff; break;
 	case FUN_16_3: val = (val >> 48) & 0xffff; break;
+	case FUN_NEG:  val = -val;      break;
 	case FUN_LOG2: val = log2_exact(val);      break;
 	}
 	return emit_value(val, 1, 0);
@@ -149,6 +155,7 @@ static void emit_tmpl(struct state *s, const struct rule_info *rinfo)
 			break;
 
 		case 'c':	// constant
+		case 'n':	// negative constant
 			switch (*tmpl) {
 			case ':':
 				tmpl++;

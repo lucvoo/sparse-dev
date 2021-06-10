@@ -15,6 +15,7 @@ zreg:	zero		== %r0
 zero:	CONST		if %c == 0
 
 imm5:	CONST		if range(%c, 0, 31)
+nmm5:	CONST		if range(%c, -31, 0)
 
 simm:	CONST		if (masked_range(%c, 0, 0, 4095) || masked_range(%c, 12, 0, 4095))
 
@@ -267,46 +268,67 @@ condf:	tsths		== lo
 
 
 // !!!WARNING!!! broken when more than one ccmp is involved
+// !!!WARNING!!! upport for ccmn (register) is missing
 tsteq:	 OR(condf,SET_EQ(reg,imm5))	[1] => ccmp	%r21, #%c22, 4, %a1
+tsteq:	 OR(condf,SET_EQ(reg,nmm5))	[1] => ccmn	%r21, #%n22, 4, %a1
 tsteq:	 OR(condf,SET_EQ(reg,reg))	[1] => ccmp	%r21, %r22, 4, %a1
 tstne:	 OR(condf,SET_NE(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstne:	 OR(condf,SET_NE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstne:	 OR(condf,SET_NE(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstle:	 OR(condf,SET_LE(reg,imm5))	[1] => ccmp	%r21, #%c22, 4, %a1
+tstle:	 OR(condf,SET_LE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 4, %a1
 tstle:	 OR(condf,SET_LE(reg,reg))	[1] => ccmp	%r21, %r22, 4, %a1
 tstlt:	 OR(condf,SET_LT(reg,imm5))	[1] => ccmp	%r21, #%c22, 1, %a1
+tstlt:	 OR(condf,SET_LT(reg,nmm5))	[1] => ccmn	%r21, #%n22, 1, %a1
 tstlt:	 OR(condf,SET_LT(reg,reg))	[1] => ccmp	%r21, %r22, 1, %a1
 tstge:	 OR(condf,SET_GE(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstge:	 OR(condf,SET_GE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstge:	 OR(condf,SET_GE(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstgt:	 OR(condf,SET_GT(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstgt:	 OR(condf,SET_GT(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstgt:	 OR(condf,SET_GT(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstls:	 OR(condf,SET_BE(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstls:	 OR(condf,SET_BE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstls:	 OR(condf,SET_BE(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstlo:	 OR(condf,SET_B(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstlo:	 OR(condf,SET_B(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstlo:	 OR(condf,SET_B(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tsths:	 OR(condf,SET_AE(reg,imm5))	[1] => ccmp	%r21, #%c22, 2, %a1
+tsths:	 OR(condf,SET_AE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 2, %a1
 tsths:	 OR(condf,SET_AE(reg,reg))	[1] => ccmp	%r21, %r22, 2, %a1
 tsthi:	 OR(condf,SET_A(reg,imm5))	[1] => ccmp	%r21, #%c22, 2, %a1
+tsthi:	 OR(condf,SET_A(reg,nmm5))	[1] => ccmn	%r21, #%n22, 2, %a1
 tsthi:	 OR(condf,SET_A(reg,reg))	[1] => ccmp	%r21, %r22, 2, %a1
 
 tsteq:	AND(condt,SET_EQ(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tsteq:	AND(condt,SET_EQ(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tsteq:	AND(condt,SET_EQ(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstne:	AND(condt,SET_NE(reg,imm5))	[1] => ccmp	%r21, #%c22, 4, %a1
+tstne:	AND(condt,SET_NE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 4, %a1
 tstne:	AND(condt,SET_NE(reg,reg))	[1] => ccmp	%r21, %r22, 4, %a1
 tstle:	AND(condt,SET_LE(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstle:	AND(condt,SET_LE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstle:	AND(condt,SET_LE(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstlt:	AND(condt,SET_LT(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tstlt:	AND(condt,SET_LT(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tstlt:	AND(condt,SET_LT(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tstge:	AND(condt,SET_GE(reg,imm5))	[1] => ccmp	%r21, #%c22, 1, %a1
+tstge:	AND(condt,SET_GE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 1, %a1
 tstge:	AND(condt,SET_GE(reg,reg))	[1] => ccmp	%r21, %r22, 1, %a1
 tstgt:	AND(condt,SET_GT(reg,imm5))	[1] => ccmp	%r21, #%c22, 4, %a1
+tstgt:	AND(condt,SET_GT(reg,nmm5))	[1] => ccmn	%r21, #%n22, 4, %a1
 tstgt:	AND(condt,SET_GT(reg,reg))	[1] => ccmp	%r21, %r22, 4, %a1
 tstls:	AND(condt,SET_BE(reg,imm5))	[1] => ccmp	%r21, #%c22, 2, %a1
+tstls:	AND(condt,SET_BE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 2, %a1
 tstls:	AND(condt,SET_BE(reg,reg))	[1] => ccmp	%r21, %r22, 2, %a1
 tstlo:	AND(condt,SET_B(reg,imm5))	[1] => ccmp	%r21, #%c22, 2, %a1
+tstlo:	AND(condt,SET_B(reg,nmm5))	[1] => ccmn	%r21, #%n22, 2, %a1
 tstlo:	AND(condt,SET_B(reg,reg))	[1] => ccmp	%r21, %r22, 2, %a1
 tsths:	AND(condt,SET_AE(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tsths:	AND(condt,SET_AE(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tsths:	AND(condt,SET_AE(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 tsthi:	AND(condt,SET_A(reg,imm5))	[1] => ccmp	%r21, #%c22, 0, %a1
+tsthi:	AND(condt,SET_A(reg,nmm5))	[1] => ccmn	%r21, #%n22, 0, %a1
 tsthi:	AND(condt,SET_A(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 
 

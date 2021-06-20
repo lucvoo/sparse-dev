@@ -150,3 +150,66 @@ reg:	ZEXT(ldb,#B)		[3] => lbu	%rd, %a1
 :	STOREMEM(LSYM,zero)	[30]=> call	memset(%l1, 0, #%#)
 
 :	STOREMEM(reg, LOADMEM(reg)) [30]=> call	memcpy(%r1, %r21, #%#)
+
+////////////////////////////////////////////////////////////////////////
+//// floating-point
+
+:	freg
+
+freg:	ARG
+freg:	REG
+
+freg:	FADD.S(freg, freg)			[2] => fadd.s	%rd, %r1, %r2
+freg:	FSUB.S(freg, freg)			[2] => fsub.s	%rd, %r1, %r2
+freg:	FMUL.S(freg, freg)			[2] => fmul.s	%rd, %r1, %r2
+freg:	FDIV.S(freg, freg)			[2] => fdiv.s	%rd, %r1, %r2
+//freg:	FMIN.S(freg, freg)			[2] => fmin.s	%rd, %r1, %r2
+//freg:	FMAX.S(freg, freg)			[2] => fmax.s	%rd, %r1, %r2
+freg:	FADD.S(FMUL(freg, freg), freg)		[4] => fmadd.s	%rd, %r11, %r12, %r2
+freg:	FADD.S(freg, FMUL(freg, freg))		[4] => fmadd.s	%rd, %r21, %r22, %r1
+freg:	FSUB.S(FMUL(freg, freg), freg)		[4] => fmsub.s	%rd, %r11, %r12, %r2
+freg:	FSUB.S(FMUL(FNEG(freg),freg),freg)	[4] => fnmadd.s	%rd, %r111, %r12, %r2
+freg:	FSUB.S(FNEG(freg),FMUL(freg,freg))	[4] => fnmadd.s	%rd, %r21, %r22, %r11
+freg:	FNEG.S(FADD(FMUL(freg,freg),freg))	[4] => fnmadd.s	%rd, %r111, %r112, %r12
+freg:	FNEG.S(FADD(freg,FMUL(freg,freg)))	[4] => fnmadd.s	%rd, %r121, %r122, %r11
+freg:	FSUB.S(freg, FMUL(freg, freg))		[4] => fnmsub.s	%rd, %r21, %r22, %r1
+freg:	FADD.S(FMUL(FNEG(freg),freg),freg)	[4] => fnmsub.s	%rd, %r111, %r12, %r2
+freg:	FNEG.S(freg)				[2] => fneg.s	%rd, %r1
+freg:	FABS.S(freg)				[2] => fabs.s	%rd, %r1
+
+reg:	FCVTS.L(freg, #S)	[3] => fcvt.w.s		%rd, %r1
+reg:	FCVTU.L(freg, #S)	[3] => fcvt.wu.s	%rd, %r1
+reg:	FCVTS.Q(freg, #S)	[3] => fcvt.l.s		%rd, %r1
+reg:	FCVTU.Q(freg, #S)	[3] => fcvt.lu.s	%rd, %r1
+freg:	FCVTF.S(freg, #D)	[3] => fcvt.w.d		%rd, %r1
+freg:	SCVTF.S(reg, #L)	[3] => fcvt.s.w		%rd, %r1
+freg:	UCVTF.S(reg, #L)	[3] => fcvt.s.wu	%rd, %r1
+freg:	SCVTF.S(reg, #Q)	[3] => fcvt.s.l		%rd, %r1
+freg:	UCVTF.S(reg, #Q)	[3] => fcvt.s.lu	%rd, %r1
+
+//freg:	FSIGN.S(freg, freg)	[3] => fsgnj.s	%rd, %r1, %r2
+//freg:	FNEG(FSIGN.S(freg,freg))[3] => fsgnjn.s	%rd, %r1, %r2
+
+freg:	COPY(freg)		[1] => fmv	%rd, %r1
+
+freg:	CALL			[1] => call	%l1 -> %rd
+:	RET(freg)		[1] => ret	%r1
+
+//freg:	SETFVAL			[5]		// FIXME
+
+freg:	FLOAD.S(addr)		[2] => flw	%rd, %a1
+freg:	FLOAD.D(addr)		[2] => fld	%rd, %a1
+:	FSTORE.S(addr, freg)	[2] => fsw	%r2, %a1
+:	FSTORE.D(addr, freg)	[2] => fsd	%r2, %a1
+
+
+reg:	FCMP_OEQ(freg, freg)	[3] => feq	%rd, %r1, %r2
+reg:	FCMP_UNE(freg, freg)	[4] => feq	%rd, %r1, %r2; xor	%rd, %rd, 1
+reg:	FCMP_OLT(freg, freg)	[3] => flt	%rd, %r1, %r2
+reg:	FCMP_OLE(freg, freg)	[3] => fle	%rd, %r1, %r2
+reg:	FCMP_OGT(freg, freg)	[3] => fgt	%rd, %r1, %r2
+reg:	FCMP_OGE(freg, freg)	[3] => fge	%rd, %r1, %r2
+reg:	FCMP_ULT(freg, freg)	[4] => fge	%rd, %r1, %r2; xor	%rd, %r1, 1
+reg:	FCMP_ULE(freg, freg)	[4] => fgt	%rd, %r1, %r2; xor	%rd, %r1, 1
+reg:	FCMP_UGT(freg, freg)	[4] => fle	%rd, %r1, %r2; xor	%rd, %r1, 1
+reg:	FCMP_UGE(freg, freg)	[4] => flt	%rd, %r1, %r2; xor	%rd, %r1, 1

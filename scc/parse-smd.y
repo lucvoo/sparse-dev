@@ -41,6 +41,8 @@ static struct ptree *CONST(void) { return tree("CONST", 0,0,0,  NULL,NULL,NULL);
 %token			COUNTH		/* '#H' */
 %token			COUNTL		/* '#L' */
 %token			COUNTQ		/* '#Q' */
+%token			COUNTS		/* '#S' */
+%token			COUNTD		/* '#D' */
 %token	<val>		COUNT		/* '#<number>' */
 %type	<nt>		lhs
 %type   <tree>		tree
@@ -102,6 +104,8 @@ count	: 			{ $$ = 0; }
 	| COUNTH		{ $$ = 16; }
 	| COUNTL		{ $$ = 32; }
 	| COUNTQ		{ $$ = 64; }
+	| COUNTS		{ $$ = 32; }
+	| COUNTD		{ $$ = 64; }
 	| COUNT			{ $$ = $1; }
 	;
 
@@ -221,6 +225,8 @@ static int yylex(void)
 			case 'H': return COUNTH;
 			case 'L': return COUNTL;
 			case 'Q': return COUNTQ;
+			case 'S': return COUNTS;
+			case 'D': return COUNTD;
 			case '1' ... '9':
 				n = 0;
 				do {

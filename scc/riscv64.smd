@@ -152,6 +152,57 @@ reg:	ZEXT(ldb,#B)		[3] => lbu	%rd, %a1
 :	STOREMEM(reg, LOADMEM(reg)) [30]=> call	memcpy(%r1, %r21, #%#)
 
 ////////////////////////////////////////////////////////////////////////
+//// Bit Manip
+
+reg:	AND(reg,NOT(reg))	[1] => andn	%rd, %r1, %r2
+reg:	AND(NOT(reg),reg)	[1] => andn	%rd, %r2, %r1
+reg:	OR(reg,NOT(reg))	[1] => orn	%rd, %r1, %r2
+reg:	OR(NOT(reg),reg)	[1] => orn	%rd, %r2, %r1
+reg:	XOR(reg, NOT(reg))	[1] => xnor	%rd, %r1, %r2
+reg:	XOR(NOT(reg), reg)	[1] => xnor	%rd, %r2, %r1
+reg:	NOT(XOR(reg, reg))	[1] => xnor	%rd, %r11, %r12
+
+reg:	MINS(reg,reg)		[1] => min	%rd, %r1, %r2
+reg:	MINU(reg,reg)		[1] => minu	%rd, %r1, %r2
+reg:	MAXS(reg,reg)		[1] => max	%rd, %r1, %r2
+reg:	MAXU(reg,reg)		[1] => maxu	%rd, %r1, %r2
+
+reg:	BSWAP.Q(reg)		[1] => rev8	%rd, %r1
+reg:	CLZ.L(reg)		[1] => clzw	%rd, %r1
+reg:	CLZ.Q(reg)		[1] => clz	%rd, %r1
+reg:	CTZ.L(reg)		[1] => ctzw	%rd, %r1
+reg:	CTZ.Q(reg)		[1] => ctz	%rd, %r1
+reg:	POPCNT.L(reg)		[1] => cpopw	%rd, %r1
+reg:	POPCNT.Q(reg)		[1] => cpop	%rd, %r1
+
+reg:	SEXT.Q(reg,#B)		[1] => sext.b	%rd, %r1
+reg:	SEXT.Q(reg,#H)		[1] => sext.h	%rd, %r1
+reg:	ZEXT.Q(reg,#H)		[1] => zext.h	%rd, %r1
+reg:	ZEXT.Q(reg,#L)		[1] => zext.w	%rd, %r1
+
+reg:	ROR.L(reg, reg)		[1] => rorw	%rd, %r1, %r2
+reg:	ROR.Q(reg, reg)		[1] => ror	%rd, %r1, %r2
+reg:	ROR.L(reg, sh)		[1] => roriw	%rd, %r1, %r2
+reg:	ROR.Q(reg, sh)		[1] => rori	%rd, %r1, %r2
+reg:	ROL.L(reg, reg)		[1] => rolw	%rd, %r1, %r2
+reg:	ROL.Q(reg, reg)		[1] => rol	%rd, %r1, %r2
+
+reg:	ADD(SHL(reg, #1), reg)			[1] => sh1add	%rd, %r1, %r2
+reg:	ADD(SHL(AND.Q(reg,mask32),#1),reg)	[1] => sh1add.uw	%rd, %r1, %r2
+reg:	ADD(SHL(ZEXT.Q(reg,#L),#1),reg)		[1] => sh1add.uw	%rd, %r1, %r2
+reg:	ADD(SHL(reg, #2), reg)			[1] => sh2add	%rd, %r1, %r2
+reg:	ADD(SHL(AND.Q(reg,mask32),#2),reg)	[1] => sh2add.uw	%rd, %r1, %r2
+reg:	ADD(SHL(ZEXT.Q(reg,#L),#2),reg)		[1] => sh2add.uw	%rd, %r1, %r2
+reg:	ADD(SHL(reg, #3), reg)			[1] => sh3add	%rd, %r1, %r2
+reg:	ADD(SHL(AND.Q(reg,mask32),#3),reg)	[1] => sh3add.uw	%rd, %r1, %r2
+reg:	ADD(SHL(ZEXT.Q(reg,#L),#3),reg)		[1] => sh3add.uw	%rd, %r1, %r2
+
+reg:	ADD(AND.Q(reg,mask32),reg)	[1] => add.uw	%rd, %r1, %r2
+reg:	ADD(TRUNC.L(reg,#Q),reg)	[1] => add.uw	%rd, %r1, %r2
+reg:	ADD(ZEXT.Q(reg,#L),reg)		[1] => add.uw	%rd, %r1, %r2
+reg:	SHL(ZEXT.Q(reg,#L),sh)		[1] => slli.uw	%rd, %r1, %c2
+
+////////////////////////////////////////////////////////////////////////
 //// floating-point
 
 :	freg

@@ -66,11 +66,21 @@ reg:	ZEXT(reg, #H)		[2] => zext.h	%rd, %r1
 reg:	ZEXT(reg, #L)		[2] => zext.w	%rd, %r1
 
 //// multiply/divide
-reg:    MUL.L(reg, reg)		[5] => mul	%rd, %r1, %r2
-reg:    DIVS(reg, reg)		[5] => div	%rd, %r1, %r2
-reg:    DIVU(reg, reg)		[5] => divu	%rd, %r1, %r2
-reg:    MODS(reg, reg)		[5] => rem	%rd, %r1, %r2
-reg:    MODU(reg, reg)		[5] => remu	%rd, %r1, %r2
+reg:	MUL.L(reg, reg)		[5] => mulw	%rd, %r1, %r2
+reg:	SEXT.Q(MUL(reg,reg),#L)	[5] => mulw	%rd, %r1, %r2
+reg:	MUL.Q(reg, reg)		[5] => mul	%rd, %r1, %r2
+reg:	DIVS.L(reg, reg)	[5] => divw	%rd, %r1, %r2
+reg:	DIVS.Q(reg, reg)	[5] => div	%rd, %r1, %r2
+reg:	DIVU.L(reg, reg)	[5] => divuw	%rd, %r1, %r2
+reg:	DIVU.Q(reg, reg)	[5] => divu	%rd, %r1, %r2
+reg:	MODS.L(reg, reg)	[5] => remw	%rd, %r1, %r2
+reg:	MODS.Q(reg, reg)	[5] => rem	%rd, %r1, %r2
+reg:	MODU.L(reg, reg)	[5] => remuw	%rd, %r1, %r2
+reg:	MODU.Q(reg, reg)	[5] => remu	%rd, %r1, %r2
+
+// 64x64 -> high(64)
+reg:	MULHS.Q(reg,reg)	[5] => mulh	%rd, %r1, %r2
+reg:	MULHU.Q(reg,reg)	[5] => mulhu	%rd, %r1, %r2
 
 //// compares & friends
 reg:	SET_EQ(reg, reg)	[2] => sub	%rd, %r1, %r2; seqz	%rd, %rd

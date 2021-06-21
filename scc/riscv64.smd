@@ -113,6 +113,9 @@ reg:	SET_AE(reg, reg)	[2] => sltu	%rd, %r1, %r2; xori	%rd, %rd, 1
 reg:	SET_AE(reg, imm12)	[2] => sltui	%rd, %r1, %c2; xori	%rd, %rd, 1
 reg:	SET_A(reg, imm12)	[2] => sltui	%rd, %r1, (%c2+1); xori	%rd, %rd, 1
 
+// select
+reg:	SEL(reg, reg, reg)	[3] =>		TODO select
+
 //// control
 :	BR			[1] => j	%b
 :	COMPUTEDGOTO(reg)	[1] => jalr	x0, %r1, 0

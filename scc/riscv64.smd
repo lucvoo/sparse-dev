@@ -82,6 +82,14 @@ reg:	MODU.Q(reg, reg)	[5] => remu	%rd, %r1, %r2
 reg:	MULHS.Q(reg,reg)	[5] => mulh	%rd, %r1, %r2
 reg:	MULHU.Q(reg,reg)	[5] => mulhu	%rd, %r1, %r2
 
+zxq:	ZEXT(reg,#Q)	== %r1
+umulq:	MUL(zxq,zxq)	== %a1, %a2
+sxq:	SEXT(reg,#Q)	== %r1
+smulq:	MUL(sxq,sxq)	== %a1, %a2
+
+reg:	TRUNC.Q(umulq, CONST)	[5] => mul	%rd, %a1
+reg:	TRUNC.Q(smulq, CONST)	[5] => mul	%rd, %a1 // FIXME: should not be needed
+
 //// compares & friends
 reg:	SET_EQ(reg, reg)	[2] => sub	%rd, %r1, %r2; seqz	%rd, %rd
 reg:	SET_EQ(reg, zero)	[1] => seqz	%rd, %r1

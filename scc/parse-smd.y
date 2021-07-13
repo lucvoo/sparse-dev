@@ -12,6 +12,7 @@ static void yyerror(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 static int yylex(void);
 static int yylineno;
 static int is_tmpl = 0;
+static int is_cond = 0;
 extern int yychar, yynerrs;
 //int yydebug = 1;
 
@@ -29,6 +30,7 @@ static struct ptree *CONST(void) { return tree("CONST", 0,0,0,  NULL,NULL,NULL);
 %token  <str>		NID
 %token  <str>		STR
 %token  <str>		TMPL
+%token  <str>		COND
 %token  <val>		INT
 %token			EMIT "=>"
 %token			EXEC "=="
@@ -63,16 +65,14 @@ entry	: rule	'\n'
 	| 	'\n'	/* empty line */
 	;
 
-rule	: lhs ':' tree cost	
-				{ mkrule(yylineno, $1, $3, $4, NULL, 0, NULL); }
-	| lhs ':' tree cost "if" cond
-				{ mkrule(yylineno, $1, $3,  0, $6, 0, NULL); }
-	| lhs ':' tree cost "==" TMPL
-				{ mkrule(yylineno, $1, $3, $4, NULL, 0, $6); }
-	| lhs ':' tree cost "=>" TMPL
-				{ mkrule(yylineno, $1, $3, $4, NULL, 1, $6); }
+rule	: lhs ':' tree cost cond           { mkrule(yylineno, $1, $3, $4, $5, 0, NULL); }
+	| lhs ':' tree cost cond "==" TMPL { mkrule(yylineno, $1, $3, $4, $5, 0, $7); }
+	| lhs ':' tree cost cond "=>" TMPL { mkrule(yylineno, $1, $3, $4, $5, 1, $7); }
 	;
 
+cond	: "if" { is_cond = 1; } COND 	{ $$ = $3; }
+	|				{ $$ = NULL; }
+	;
 
 lhs	: NID			{ $$ = get_nterm($1); }
 	| 			{ $$ = get_nterm(""); }
@@ -113,8 +113,6 @@ cost	: 			{ $$ = 0; }
 	| '[' INT ']'		{ $$ = $2; }
 	;
 
-cond	: { is_tmpl = 1; } TMPL { $$ = $2; }
-	;
 %%
 #include <stdarg.h>
 #include <ctype.h>
@@ -161,6 +159,33 @@ static int yylex(void)
 			is_tmpl = 0;
 
 			return TMPL;
+		}
+		if (is_cond) {
+			int level = 1;
+
+			c = *buffp;
+			while (isblank(*buffp))
+				buffp++;
+			buf = buffp;
+			end = buffer + bufn;
+			if (*buffp == '(')
+				buffp++;
+			while (1) {
+				c = *buffp;
+				if (c == '\n')
+					break;
+				buffp++;
+				if (c == '(')
+					level++;
+				if (c == ')') {
+					level--;
+					if (level == 0)
+						break;
+				}
+			}
+			yylval.str = strndup(buf, buffp-buf);
+			is_cond = 0;
+			return COND;
 		}
 
 		switch ((c = *buffp++)) {

@@ -193,6 +193,10 @@ static int yylex(void)
 		}
 
 		switch ((c = *buffp++)) {
+		case '\\':
+			if (*buffp != '\n')
+				return c;
+			/* fallthrough */
 		case '\0':	// try to get a new input line
 			bufn = getline(&buffer, &bufcap, stdin);
 			if (bufn < 0)

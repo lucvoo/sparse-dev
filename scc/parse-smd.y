@@ -64,13 +64,13 @@ entry	: rule	'\n'
 	;
 
 rule	: lhs ':' tree cost	
-				{ mkrule(yylineno, $1, $3, $4, 0, NULL, NULL); }
+				{ mkrule(yylineno, $1, $3, $4, NULL, 0, NULL); }
 	| lhs ':' tree cost "if" cond
-				{ mkrule(yylineno, $1, $3,  0, 0, NULL, $6); }
+				{ mkrule(yylineno, $1, $3,  0, $6, 0, NULL); }
 	| lhs ':' tree cost "==" TMPL
-				{ mkrule(yylineno, $1, $3, $4, 0, $6, NULL); }
+				{ mkrule(yylineno, $1, $3, $4, NULL, 0, $6); }
 	| lhs ':' tree cost "=>" TMPL
-				{ mkrule(yylineno, $1, $3, $4, 1, $6, NULL); }
+				{ mkrule(yylineno, $1, $3, $4, NULL, 1, $6); }
 	;
 
 

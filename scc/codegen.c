@@ -108,11 +108,11 @@ static struct nterm *mkrule_internal(int lineno, struct ptree *t)
 	struct nterm *nt;
 
 	nt = mk_internal_nterm();
-	mkrule(lineno, nt, t, 0, 0, NULL, NULL);
+	mkrule(lineno, nt, t, 0, NULL, 0, NULL);
 	return nt;
 }
 
-void mkrule(int lineno, struct nterm *lhs, struct ptree *rhs, int cost, int emit, const char *tmpl, const char *cond)
+void mkrule(int lineno, struct nterm *lhs, struct ptree *rhs, int cost, const char *cond, int emit, const char *tmpl)
 {
 	struct rule *r = malloc(sizeof(*r));
 	int i;

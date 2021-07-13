@@ -65,7 +65,7 @@ struct rule {
 
 struct nterm *get_nterm(const char *name);
 struct ptree *mktree(const char *name, int count, int size, struct ptree *left, struct ptree *right, struct ptree *extra);
-void mkrule(int lineno, struct nterm *lhs, struct ptree *rhs, int cost, int emit, const char *tmpl, const char *cond);
+void mkrule(int lineno, struct nterm *lhs, struct ptree *rhs, int cost, const char *cond, int emit, const char *tmpl);
 
 int lookup_term(const char *name);
 int check_term(unsigned int idx, int arity);

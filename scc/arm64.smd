@@ -174,6 +174,11 @@ reg:	SEXT(TRUNC(reg,sh),sh)	[1] => sbfx	%rd, %r11, #0, #%c2
 reg:	SEXT(lsr, sh)		[1] => sbfx	%rd, %r11, #%c12, #%c2
 reg:	SEXT(TRUNC(lsr,sh),sh)	[1] => sbfx	%rd, %r111, #%c112, #%c2
 
+reg:	LSR(SHL(reg,sh),sh) [1] if (%c2 < %c12) => ubfiz	%rd, %r11, #(%c12-%c2), #(%#-%c12)
+reg:	ASR(SHL(reg,sh),sh) [1] if (%c2 < %c12) => sbfiz	%rd, %r11, #(%c12-%c2), #(%#-%c12)
+reg:	LSR(SHL(reg,sh),sh) [1] if (%c2 > %c12) => ubfx	%rd, %r11, #(%c2-%c12), #(%#-%c2)
+reg:	ASR(SHL(reg,sh),sh) [1] if (%c2 > %c12) => sbfx	%rd, %r11, #(%c2-%c12), #(%#-%c2)
+
 //// compare
 reg:	SET_EQ(condf, zero)	[1] => cset	%rd, %a1
 reg:	SET_NE(condt, zero)	[1] => cset	%rd, %a1

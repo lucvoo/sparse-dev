@@ -382,7 +382,13 @@ static void print_condition(const struct rule *r)
 			c = *str++;
 			switch (c) {
 			case 'c':
-				printf("s->src->value");
+				printf("s");
+				c = *str;
+				while (c > '0' && c <= '9') {
+					printf("->kids[%c]", c);
+					c = *++str;
+				}
+				printf("->src->value");
 			}
 			break;
 		default:

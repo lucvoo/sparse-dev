@@ -32,8 +32,8 @@ static struct ptree *CONST(void) { return tree("CONST", 0,0,0,  NULL,NULL,NULL);
 %token  <str>		TMPL
 %token  <str>		COND
 %token  <val>		INT
-%token			EMIT "=>"
-%token			EXEC "=="
+%token  <val>		EMIT "=>"
+%token  <val>		EXEC "=="
 %token			IF   "if"
 %token			SIZEB		/* '.B' */
 %token			SIZEH		/* '.H' */
@@ -51,6 +51,7 @@ static struct ptree *CONST(void) { return tree("CONST", 0,0,0,  NULL,NULL,NULL);
 %type   <val>		cost
 %type   <val>		count
 %type   <val>		size
+%type   <val>		kind
 %type   <str>		cond
 
 %%
@@ -65,13 +66,16 @@ entry	: rule	'\n'
 	| 	'\n'	/* empty line */
 	;
 
-rule	: lhs ':' tree cost cond           { mkrule(yylineno, $1, $3, $4, $5, 0, NULL); }
-	| lhs ':' tree cost cond "==" TMPL { mkrule(yylineno, $1, $3, $4, $5, 0, $7); }
-	| lhs ':' tree cost cond "=>" TMPL { mkrule(yylineno, $1, $3, $4, $5, 1, $7); }
+rule	: lhs ':' tree cost cond           { mkrule(yylineno, $1, $3, $4, $5,  0, NULL); }
+	| lhs ':' tree cost cond kind TMPL { mkrule(yylineno, $1, $3, $4, $5, $6, $7); }
 	;
 
 cond	: "if" { is_cond = 1; } COND 	{ $$ = $3; }
 	|				{ $$ = NULL; }
+	;
+
+kind	: "=>"	{ $$ = 1; }
+	| "=="	{ $$ = 0; }
 	;
 
 lhs	: NID			{ $$ = get_nterm($1); }

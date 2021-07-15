@@ -384,6 +384,7 @@ reg:	ldl				[4] => ldr	%rd, [%a0]
 reg:	ZEXT(ldl,#L)			[4] => ldr	%rd, [%a1]
 reg:	SEXT(ldl,#L)			[4] => ldrsw	%rd, [%a1]
 :	STORE.L(addr4,zreg)		[1] => str	%r2, [%a1]
+:	STORE.L(addr4,TRUNC(reg,CONST))	[1] => str	%r21, [%a1]
 :	STORE2.L(addr4,zreg)		[1] => str	%r2, [%a1]
 
 addr2:	addr
@@ -399,6 +400,7 @@ reg:	ldh				[4] => ldrh	%rd, [%a0]
 reg:	ZEXT(ldh,#H)			[4] => ldrh	%rd, [%a1]
 reg:	SEXT(ldh,#H)			[4] => ldrsh	%rd, [%a1]
 :	STORE.H(addr2,zreg)		[1] => strh	%r2, [%a1]
+:	STORE.H(addr2,TRUNC(reg,CONST))	[1] => strh	%r21, [%a1]
 
 addr1:	addr
 addr1:	ADD(reg, pimm1)			== %r1, #%c2
@@ -407,6 +409,7 @@ reg:	ldb				[4] => ldrb	%rd, [%a0]
 reg:	ZEXT(ldb,#B)			[4] => ldrb	%rd, [%a1]
 reg:	SEXT(ldb,#B)			[4] => ldrsb	%rd, [%a1]
 :	STORE.B(addr1,zreg)		[1] => strb	%r2, [%a1]
+:	STORE.B(addr1,TRUNC(reg,CONST))	[1] => strb	%r21, [%a1]
 
 :	STOREMEM(reg, LOADMEM(reg))	[30]=> bl	memcpy(%r1, %r21, #%#)
 

@@ -18,6 +18,7 @@ imm5:	CONST		if range(%c, 0, 31)
 nmm5:	CONST		if range(%c, -31, 0)
 
 simm:	CONST		if (masked_range(%c, 0, 0, 4095) || masked_range(%c, 12, 0, 4095))
+nimm:	CONST		if masked_range(%c, 0, -4096, -1)
 
 pimm8:	CONST		if masked_range(%c, 3, 0, 4095)
 pimm4:	CONST		if masked_range(%c, 2, 0, 4095)
@@ -230,6 +231,16 @@ tstne:	SET_NE(NEG(reg), simm)	[1] => cmn	%r1, #%c2
 tstne:	SET_NE(NEG(reg), areg)	[1] => cmn	%r1, %a2
 tstne:	SET_NE(NEG(areg), reg)	[1] => cmn	%r2, %a1
 
+tsteq:	SET_EQ(reg, nimm)	[1] => cmn	%r1, #%n2
+tstne:	SET_NE(reg, nimm)	[1] => cmn	%r1, #%n2
+tstlt:	SET_LT(reg, nimm)	[1] => cmn	%r1, #%n2
+tstle:	SET_LE(reg, nimm)	[1] => cmn	%r1, #%n2
+tstge:	SET_GE(reg, nimm)	[1] => cmn	%r1, #%n2
+tstgt:	SET_GT(reg, nimm)	[1] => cmn	%r1, #%n2
+tstlo:	SET_B( reg, nimm)	[1] => cmn	%r1, #%n2
+tstls:	SET_BE(reg, nimm)	[1] => cmn	%r1, #%n2
+tsths:	SET_AE(reg, nimm)	[1] => cmn	%r1, #%n2
+tsthi:	SET_A( reg, nimm)	[1] => cmn	%r1, #%n2
 
 // TODO others cmn for non-commutative compares
 

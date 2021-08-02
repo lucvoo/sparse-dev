@@ -306,6 +306,7 @@ tsthi:	AND(condt,SET_A(reg,reg))	[1] => ccmp	%r21, %r22, 0, %a1
 
 
 :	CBR(condt)		[1] => b%a1	%b
+:	CBR(reg)		[1] => cbnz	%r1, %b
 
 cbne:	SET_NE(reg, zero)	    == %r1
 cbeq:	SET_EQ(reg, zero)	    == %r1

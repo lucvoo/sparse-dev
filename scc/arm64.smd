@@ -346,7 +346,9 @@ addr:	asym			    == %rp
 addr:	reg			    == %r0
 addr:	ADD(reg,reg)		    == %r1, %r2
 addr:	ADD(reg,ZEXT(reg,#L))	    == %r1, %r21, uxtw
+addr:	ADD(ZEXT(reg,#L),reg)	    == %r2, %r11, uxtw
 addr:	ADD(reg,SEXT(reg,#L))	    == %r1, %r21, sxtw
+addr:	ADD(SEXT(reg,#L),reg)	    == %r2, %r11, sxtw
 
 addr8:	addr
 addr8:	ADD(reg, pimm8)			    == %r1, #%c2

@@ -354,6 +354,10 @@ addr8:	addr
 addr8:	ADD(reg, pimm8)			    == %r1, #%c2
 addr8:	ADD(reg,SHL(reg, #3))		    == %r1, %r21, lsl #3
 addr8:	ADD(SHL(reg, #3), reg)		    == %r2, %r11, lsl #3
+addr8:	ADD(reg,SHL(SEXT(reg,#L),#3))	== %r1, %r21, sxtw #3
+addr8:	ADD(SHL(SEXT(reg,#L),#3),reg)	== %r2, %r11, sxtw #3
+addr8:	ADD(reg,SHL(ZEXT(reg,#L),#3))	== %r1, %r21, uxtw #3
+addr8:	ADD(SHL(ZEXT(reg,#L),#3),reg)	== %r2, %r11, uxtw #3
 reg:	LOAD.Q(addr8)			[4] => ldr	%rd, [%a1]
 :	STORE.Q(addr8,zreg)		[1] => str	%r2, [%a1]
 
@@ -361,6 +365,10 @@ addr4:	addr
 addr4:	ADD(reg, pimm4)			== %r1, #%c2
 addr4:	ADD(reg,SHL(reg, #2))		== %r1, %r21, lsl #2
 addr4:	ADD(SHL(reg, #2),reg)		== %r2, %r11, lsl #2
+addr4:	ADD(reg,SHL(SEXT(reg,#L),#2))	== %r1, %r21, sxtw #2
+addr4:	ADD(SHL(SEXT(reg,#L),#2),reg)	== %r2, %r11, sxtw #2
+addr4:	ADD(reg,SHL(ZEXT(reg,#L),#2))	== %r1, %r21, uxtw #2
+addr4:	ADD(SHL(ZEXT(reg,#L),#2),reg)	== %r2, %r11, uxtw #2
 ldl:	LOAD.L(addr4)			== %a1
 ldl:	LOAD2.L(addr4)			== %a1
 reg:	ldl				[4] => ldr	%rd, [%a0]
@@ -373,6 +381,10 @@ addr2:	addr
 addr2:	ADD(reg, pimm2)			== %r1, #%c2
 addr2:	ADD(reg,SHL(reg, #1))		== %r1, %r21, lsl #1
 addr2:	ADD(SHL(reg, #1), reg)		== %r2, %r11, lsl #1
+addr2:	ADD(reg,SHL(SEXT(reg,#L),#1))	== %r1, %r21, sxtw #1
+addr2:	ADD(SHL(SEXT(reg,#L),#1),reg)	== %r2, %r11, sxtw #1
+addr2:	ADD(reg,SHL(ZEXT(reg,#L),#1))	== %r1, %r21, uxtw #1
+addr2:	ADD(SHL(ZEXT(reg,#L),#1),reg)	== %r2, %r11, uxtw #1
 ldh:	LOAD.H(addr2)			== %a1
 reg:	ldh				[4] => ldrh	%rd, [%a0]
 reg:	ZEXT(ldh,#H)			[4] => ldrh	%rd, [%a1]

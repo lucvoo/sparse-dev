@@ -499,6 +499,25 @@ reg:	SEXT(ldb,#B)			[4] => ldrsb	%rd, [%a1]
 :	STORE.B(addr1,zreg)		[1] => strb	%r2, [%a1]
 :	STORE.B(addr1,TRUNC(reg,CONST))	[1] => strb	%r21, [%a1]
 
+
+simm7l:	CONST		if masked_range(%c, 2, -256, 252)
+simm7q:	CONST		if masked_range(%c, 2, -512, 504)
+
+addr7l:	reg				== %r0
+addr7l:	ADD(reg, simm7l)		== %r1, #%c2
+addr7q:	reg				== %r0
+addr7q:	ADD(reg, simm7q)		== %r1, #%c2
+
+preg:	ARG
+preg:	REG
+
+reg:	LOAD2.L(addr7l)			[4] => ldp	%rd:lo, %rd:hi, [%a1]
+reg:	LOAD2.Q(addr7q)			[4] => ldp	%rd:lo, %rd:hi, [%a1]
+:	STORE2.L(addr7l, zero)		[1] => stp	%r2, %r0, [%a1]
+:	STORE2.L(addr7l, preg)		[1] => stp	%r2:lo, %r2:hi, [%a1]
+:	STORE2.Q(addr7q, zero)		[1] => stp	%r0, %r0, [%a1]
+:	STORE2.Q(addr7q, preg)		[1] => stp	%r2:lo, %r2:hi, [%a1]
+
 :	STOREMEM(reg, LOADMEM(reg))	[30]=> bl	memcpy(%r1, %r21, #%#)
 
 
